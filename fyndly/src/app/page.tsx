@@ -13,6 +13,7 @@ export default function Home() {
   const [theme, setTheme] = useState('');
   const [numPosts, setNumPosts] = useState('');
   const [wordLimit, setWordLimit] = useState('');
+  const [writingStyle, setWritingStyle] = useState('');
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
@@ -38,22 +39,28 @@ export default function Home() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/generate-posts', {
+      const response = await fetch('http://127.0.0.1:5000/web_agent', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           theme,
-          numPosts: parseInt(numPosts),
-          wordLimit: parseInt(wordLimit),
+          num_of_posts: parseInt(numPosts),
+          word_limit: parseInt(wordLimit),
+          writing_style: writingStyle,
         }),
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
       const data = await response.json();
       setPosts(data);
     } catch (error) {
       console.error('Error:', error);
+      alert('Failed to generate posts. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -107,6 +114,25 @@ export default function Home() {
                 placeholder="Enter your content theme"
                 required
               />
+            </div>
+
+            <div>
+              <label htmlFor="writingStyle" className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                Writing Style Example
+              </label>
+              <textarea
+                id="writingStyle"
+                value={writingStyle}
+                onChange={(e) => setWritingStyle(e.target.value)}
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition-all duration-200 min-h-[120px] ${
+                  darkMode ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' : 'bg-white border-gray-200 text-gray-900 placeholder-gray-500'
+                }`}
+                placeholder="Enter a paragraph that demonstrates your preferred writing style..."
+                required
+              />
+              <p className={`mt-2 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                This will help generate content that matches your writing style.
+              </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
