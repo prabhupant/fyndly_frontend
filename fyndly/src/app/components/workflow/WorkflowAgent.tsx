@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Tab } from '@headlessui/react';
 import {
   PlusIcon,
   Cog6ToothIcon,
@@ -18,6 +19,11 @@ interface Workflow {
   contentSource: string;
   schedule: string;
   status: 'active' | 'paused' | 'error';
+  contentSources: string[];
+  frequency: string;
+  timeOfDay: string;
+  autoPost: boolean;
+  requireReview: boolean;
 }
 
 interface Platform {
@@ -30,13 +36,14 @@ interface Platform {
 export default function WorkflowAgent() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showIntegrationsModal, setShowIntegrationsModal] = useState(false);
+  const [editingWorkflow, setEditingWorkflow] = useState<Workflow | null>(null);
 
   const platforms: Platform[] = [
     { id: 'linkedin', name: 'LinkedIn', icon: LinkedInLogo, status: 'active' },
     { id: 'twitter', name: 'Twitter (X)', icon: XLogo, status: 'active' },
   ];
 
-  const workflows: Workflow[] = [
+  const [workflows, setWorkflows] = useState<Workflow[]>([
     {
       id: '1',
       name: 'LinkedIn Weekly Thought Leadership',
@@ -44,6 +51,11 @@ export default function WorkflowAgent() {
       contentSource: 'Writing Agent Drafts',
       schedule: 'Every Monday at 10 AM',
       status: 'active',
+      contentSources: ['writing'],
+      frequency: 'weekly',
+      timeOfDay: '10:00',
+      autoPost: false,
+      requireReview: true,
     },
     {
       id: '2',
@@ -52,13 +64,59 @@ export default function WorkflowAgent() {
       contentSource: 'Research Agent Summaries',
       schedule: 'Daily at 9 AM, 2 PM, 5 PM',
       status: 'paused',
+      contentSources: ['research'],
+      frequency: 'daily',
+      timeOfDay: '09:00',
+      autoPost: true,
+      requireReview: false,
     },
-  ];
+  ]);
 
   const handleCreateWorkflow = (workflow: any) => {
-    // Here you would typically send this to your backend
-    console.log('New workflow:', workflow);
+    const newWorkflow = {
+      ...workflow,
+      id: (workflows.length + 1).toString(),
+      status: 'active',
+      schedule: getScheduleText(workflow.frequency, workflow.timeOfDay),
+      contentSource: getContentSourceText(workflow.contentSources),
+    };
+    setWorkflows([...workflows, newWorkflow]);
     setShowCreateModal(false);
+  };
+
+  const handleEditWorkflow = (workflow: any) => {
+    const updatedWorkflow = {
+      ...workflow,
+      schedule: getScheduleText(workflow.frequency, workflow.timeOfDay),
+      contentSource: getContentSourceText(workflow.contentSources),
+    };
+    setWorkflows(workflows.map(w => w.id === updatedWorkflow.id ? updatedWorkflow : w));
+    setEditingWorkflow(null);
+  };
+
+  const getScheduleText = (frequency: string, timeOfDay: string) => {
+    const time = new Date(`2000-01-01T${timeOfDay}`).toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: 'numeric',
+    });
+    switch (frequency) {
+      case 'daily':
+        return `Daily at ${time}`;
+      case 'weekly':
+        return `Every Monday at ${time}`;
+      case 'custom':
+        return `Custom schedule at ${time}`;
+      default:
+        return `${frequency} at ${time}`;
+    }
+  };
+
+  const getContentSourceText = (sources: string[]) => {
+    const sourceNames = sources.map(sourceId => {
+      const source = contentSources.find(s => s.id === sourceId);
+      return source ? source.name : sourceId;
+    });
+    return sourceNames.join(', ');
   };
 
   return (
@@ -100,7 +158,7 @@ export default function WorkflowAgent() {
                   <div className="mt-2 flex items-center space-x-4 text-sm text-gray-500">
                     <div className="flex items-center">
                       {workflow.platforms.includes('linkedin') && (
-                        <LinkedInLogo className="w-5 h-5 text-blue-600" />
+                        <LinkedInLogo className="w-5 h-5 text-[#0A66C2]" />
                       )}
                       {workflow.platforms.includes('twitter') && (
                         <XLogo className="w-5 h-5 ml-2" />
@@ -126,7 +184,10 @@ export default function WorkflowAgent() {
                   </div>
                 </div>
                 <div className="flex space-x-3">
-                  <button className="text-gray-400 hover:text-gray-500">
+                  <button 
+                    onClick={() => setEditingWorkflow(workflow)}
+                    className="text-gray-400 hover:text-gray-500"
+                  >
                     <PencilSquareIcon className="w-5 h-5" />
                   </button>
                   <button className="text-gray-400 hover:text-gray-500">
@@ -149,14 +210,19 @@ export default function WorkflowAgent() {
         </div>
       </div>
 
-      {/* Create Workflow Modal */}
-      {showCreateModal && (
+      {/* Create/Edit Workflow Modal */}
+      {(showCreateModal || editingWorkflow) && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-medium text-gray-900">Create New Workflow</h2>
+              <h2 className="text-lg font-medium text-gray-900">
+                {editingWorkflow ? 'Edit Workflow' : 'Create New Workflow'}
+              </h2>
               <button
-                onClick={() => setShowCreateModal(false)}
+                onClick={() => {
+                  setShowCreateModal(false);
+                  setEditingWorkflow(null);
+                }}
                 className="text-gray-400 hover:text-gray-500"
               >
                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -165,8 +231,12 @@ export default function WorkflowAgent() {
               </button>
             </div>
             <WorkflowForm
-              onSubmit={handleCreateWorkflow}
-              onCancel={() => setShowCreateModal(false)}
+              onSubmit={editingWorkflow ? handleEditWorkflow : handleCreateWorkflow}
+              onCancel={() => {
+                setShowCreateModal(false);
+                setEditingWorkflow(null);
+              }}
+              initialData={editingWorkflow}
             />
           </div>
         </div>
