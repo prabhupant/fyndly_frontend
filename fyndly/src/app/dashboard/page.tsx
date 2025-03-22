@@ -20,6 +20,8 @@ import ContentCalendar from '../components/dashboard/ContentCalendar';
 import AudienceMetrics from '../components/dashboard/AudienceMetrics';
 import WorkflowStatus from '../components/dashboard/WorkflowStatus';
 import AIRecommendations from '../components/dashboard/AIRecommendations';
+import QuickActions from '../components/dashboard/QuickActions';
+import GamificationCard from '../components/dashboard/GamificationCard';
 
 // Register ChartJS components
 ChartJS.register(
@@ -109,7 +111,10 @@ export default function DashboardPage() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-semibold text-gray-900 mb-6">Dashboard</h1>
+      <div className="flex justify-between items-start mb-6">
+        <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
+        <QuickActions />
+      </div>
       
       <div className="space-y-6">
         {/* Overview Cards */}
@@ -171,98 +176,105 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Engagement Chart */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-lg font-semibold text-gray-900">Engagement Trends</h2>
-            <div className="flex space-x-2">
-              <button
-                onClick={() => setSelectedSource('all')}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  selectedSource === 'all'
-                    ? 'bg-blue-100 text-blue-700'
-                    : 'text-gray-600 hover:bg-gray-100'
-                }`}
-              >
-                All
-              </button>
-              <button
-                onClick={() => setSelectedSource('X')}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-2 ${
-                  selectedSource === 'X'
-                    ? 'bg-blue-100 text-blue-700'
-                    : 'text-gray-600 hover:bg-gray-100'
-                }`}
-              >
-                <XLogo className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setSelectedSource('LinkedIn')}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-2 ${
-                  selectedSource === 'LinkedIn'
-                    ? 'bg-blue-100 text-blue-700'
-                    : 'text-gray-600 hover:bg-gray-100'
-                }`}
-              >
-                <LinkedInLogo className="w-4 h-4 text-[#0A66C2]" />
-              </button>
-            </div>
-          </div>
-          <div className="h-[400px]">
-            <Line
-              data={getChartData()}
-              options={{
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: {
-                  mode: 'index' as const,
-                  intersect: false,
-                },
-                scales: {
-                  y: {
-                    beginAtZero: true,
-                    grid: {
-                      color: 'rgba(156, 163, 175, 0.1)',
+        {/* Engagement Chart and Gamification */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          <div className="lg:col-span-3">
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-lg font-semibold text-gray-900">Engagement Trends</h2>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => setSelectedSource('all')}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      selectedSource === 'all'
+                        ? 'bg-blue-100 text-blue-700'
+                        : 'text-gray-600 hover:bg-gray-100'
+                    }`}
+                  >
+                    All
+                  </button>
+                  <button
+                    onClick={() => setSelectedSource('X')}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-2 ${
+                      selectedSource === 'X'
+                        ? 'bg-blue-100 text-blue-700'
+                        : 'text-gray-600 hover:bg-gray-100'
+                    }`}
+                  >
+                    <XLogo className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => setSelectedSource('LinkedIn')}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-2 ${
+                      selectedSource === 'LinkedIn'
+                        ? 'bg-blue-100 text-blue-700'
+                        : 'text-gray-600 hover:bg-gray-100'
+                    }`}
+                  >
+                    <LinkedInLogo className="w-4 h-4 text-[#0A66C2]" />
+                  </button>
+                </div>
+              </div>
+              <div className="h-[400px]">
+                <Line
+                  data={getChartData()}
+                  options={{
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                      mode: 'index' as const,
+                      intersect: false,
                     },
-                    ticks: {
-                      color: 'rgb(107, 114, 128)',
-                    }
-                  },
-                  x: {
-                    grid: {
-                      color: 'rgba(156, 163, 175, 0.1)',
+                    scales: {
+                      y: {
+                        beginAtZero: true,
+                        grid: {
+                          color: 'rgba(156, 163, 175, 0.1)',
+                        },
+                        ticks: {
+                          color: 'rgb(107, 114, 128)',
+                        }
+                      },
+                      x: {
+                        grid: {
+                          color: 'rgba(156, 163, 175, 0.1)',
+                        },
+                        ticks: {
+                          color: 'rgb(107, 114, 128)',
+                        }
+                      }
                     },
-                    ticks: {
-                      color: 'rgb(107, 114, 128)',
-                    }
-                  }
-                },
-                plugins: {
-                  legend: {
-                    labels: {
-                      color: 'rgb(107, 114, 128)',
-                      usePointStyle: true,
-                      generateLabels: (chart) => {
-                        const datasets = chart.data.datasets;
-                        return datasets.map((dataset, i) => ({
-                          text: dataset.label?.includes('X') ? '' : '',
-                          fillStyle: dataset.backgroundColor as string,
-                          strokeStyle: dataset.borderColor as string,
-                          lineWidth: 2,
-                          hidden: !chart.isDatasetVisible(i),
-                          index: i,
-                          pointStyle: (ctx) => {
-                            return dataset.label?.includes('X') 
-                              ? new XLogo({ className: 'w-4 h-4' }).type
-                              : new LinkedInLogo({ className: 'w-4 h-4' }).type;
+                    plugins: {
+                      legend: {
+                        labels: {
+                          color: 'rgb(107, 114, 128)',
+                          usePointStyle: true,
+                          generateLabels: (chart) => {
+                            const datasets = chart.data.datasets;
+                            return datasets.map((dataset, i) => ({
+                              text: dataset.label?.includes('X') ? '' : '',
+                              fillStyle: dataset.backgroundColor as string,
+                              strokeStyle: dataset.borderColor as string,
+                              lineWidth: 2,
+                              hidden: !chart.isDatasetVisible(i),
+                              index: i,
+                              pointStyle: (ctx) => {
+                                return dataset.label?.includes('X') 
+                                  ? new XLogo({ className: 'w-4 h-4' }).type
+                                  : new LinkedInLogo({ className: 'w-4 h-4' }).type;
+                              }
+                            }));
                           }
-                        }));
+                        }
                       }
                     }
-                  }
-                }
-              }}
-            />
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+          <div className="lg:col-span-1">
+            <GamificationCard />
           </div>
         </div>
 
