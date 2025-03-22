@@ -50,10 +50,7 @@ const navigation: NavItem[] = [
 export default function LeftPanel() {
   const pathname = usePathname();
 
-  const isActive = (path: string) => {
-    return pathname === path;
-  };
-
+  const isActive = (path: string) => pathname === path;
   const isParentActive = (item: NavItem) => 
     item.subItems?.some(subItem => pathname === subItem.href) || pathname === item.href;
 
@@ -67,34 +64,34 @@ export default function LeftPanel() {
           fyndly
         </h1>
       </div>
-      <nav className="mt-2">
+      <nav className="mt-2 px-3">
         {navigation.map((item) => (
-          <div key={item.href}>
+          <div key={item.href} className="mb-2">
             <Link
               href={item.href}
-              className={`block px-4 py-2 text-sm ${
+              className={`flex items-center px-3 py-2.5 text-sm rounded-lg font-medium transition-all duration-200 ${
                 isParentActive(item)
-                  ? 'bg-indigo-50 text-indigo-600 font-medium'
-                  : 'text-gray-600 hover:bg-gray-50'
+                  ? 'bg-indigo-50 text-indigo-600'
+                  : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
               }`}
             >
-              <span className="mr-3">{item.icon}</span>
-              {item.label}
+              <span className="text-xl mr-3">{item.icon}</span>
+              <span className="font-inter tracking-wide">{item.label}</span>
             </Link>
             {item.subItems && (
-              <div className="ml-6 border-l border-gray-200">
+              <div className="ml-7 mt-1 space-y-1 border-l border-gray-200 pl-3">
                 {item.subItems.map((subItem) => (
                   <Link
                     key={subItem.href}
                     href={subItem.href}
-                    className={`block px-4 py-2 text-sm ${
+                    className={`flex items-center px-3 py-2 text-sm rounded-lg font-medium transition-all duration-200 ${
                       isActive(subItem.href)
-                        ? 'bg-indigo-50 text-indigo-600 font-medium'
-                        : 'text-gray-600 hover:bg-gray-50'
+                        ? 'bg-indigo-50 text-indigo-600'
+                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                     }`}
                   >
-                    <span className="mr-3">{subItem.icon}</span>
-                    {subItem.label}
+                    <span className="text-lg mr-2.5">{subItem.icon}</span>
+                    <span className="font-inter tracking-wide">{subItem.label}</span>
                   </Link>
                 ))}
               </div>
