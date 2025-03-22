@@ -1,13 +1,16 @@
 'use client';
 
+import { useState } from 'react';
 import LeftPanel from './LeftPanel';
 import TopPanel from './TopPanel';
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
+  const [isLeftPanelHovered, setIsLeftPanelHovered] = useState(false);
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <LeftPanel />
-      <div className="pl-64"> {/* Same as LeftPanel width */}
+      <LeftPanel onHoverChange={setIsLeftPanelHovered} />
+      <div className={`transition-all duration-300 ${isLeftPanelHovered ? 'pl-64' : 'pl-16'}`}>
         <TopPanel />
         <main className="p-6">
           {children}
