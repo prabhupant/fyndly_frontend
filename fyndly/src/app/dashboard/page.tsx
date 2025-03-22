@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import MainLayout from '../components/layout/MainLayout';
 import { XLogo, LinkedInLogo } from '../components/Icons';
 import {
   Chart as ChartJS,
@@ -103,178 +102,160 @@ export default function DashboardPage() {
   };
 
   return (
-    <MainLayout>
-      <div className="space-y-6">
-        {/* Overview Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 transition-colors duration-200">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Total Posts</h2>
-            <div className="flex items-baseline">
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">{mockData.totalPosts}</p>
-              <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">posts</span>
-            </div>
-            <div className="mt-4 flex justify-between text-sm">
-              <div className="flex items-center space-x-2">
-                <XLogo className="w-4 h-4 text-gray-600 dark:text-gray-300" />
-                <span className="text-gray-600 dark:text-gray-300">{mockData.platformStats.X.posts}</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <LinkedInLogo className="w-4 h-4 text-gray-600 dark:text-gray-300" />
-                <span className="text-gray-600 dark:text-gray-300">{mockData.platformStats.LinkedIn.posts}</span>
-              </div>
-            </div>
+    <div className="space-y-6">
+      {/* Overview Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white rounded-lg shadow p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-2">Total Posts</h2>
+          <div className="flex items-baseline">
+            <p className="text-3xl font-bold text-gray-900">{mockData.totalPosts}</p>
+            <span className="ml-2 text-sm text-gray-500">posts</span>
           </div>
-
-          {/* X Trend Card */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 transition-colors duration-200">
-            <div className="flex items-center space-x-2 mb-2">
-              <XLogo className="w-5 h-5 text-gray-900 dark:text-white" />
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Trend</h2>
+          <div className="mt-4 flex justify-between text-sm">
+            <div className="flex items-center space-x-2">
+              <XLogo className="w-4 h-4" />
+              <span className="text-gray-600">{mockData.platformStats.X.posts}</span>
             </div>
-            <div className="flex items-center">
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">{Math.abs(mockData.platformStats.X.trend)}%</p>
-              {mockData.platformStats.X.trend > 0 ? (
-                <ArrowUpIcon className="w-5 h-5 ml-2 text-green-500" />
-              ) : (
-                <ArrowDownIcon className="w-5 h-5 ml-2 text-red-500" />
-              )}
+            <div className="flex items-center space-x-2">
+              <LinkedInLogo className="w-4 h-4 text-[#0A66C2]" />
+              <span className="text-gray-600">{mockData.platformStats.LinkedIn.posts}</span>
             </div>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
-              {mockData.platformStats.X.trend > 0 ? 'Increase' : 'Decrease'} from last month
-            </p>
-          </div>
-
-          {/* LinkedIn Trend Card */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 transition-colors duration-200">
-            <div className="flex items-center space-x-2 mb-2">
-              <LinkedInLogo className="w-5 h-5 text-gray-900 dark:text-white" />
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Trend</h2>
-            </div>
-            <div className="flex items-center">
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">{Math.abs(mockData.platformStats.LinkedIn.trend)}%</p>
-              {mockData.platformStats.LinkedIn.trend > 0 ? (
-                <ArrowUpIcon className="w-5 h-5 ml-2 text-green-500" />
-              ) : (
-                <ArrowDownIcon className="w-5 h-5 ml-2 text-red-500" />
-              )}
-            </div>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
-              {mockData.platformStats.LinkedIn.trend > 0 ? 'Increase' : 'Decrease'} from last month
-            </p>
           </div>
         </div>
 
-        {/* Engagement Chart */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 transition-colors duration-200">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Engagement Trends</h2>
-            <div className="flex space-x-2">
-              <button
-                onClick={() => setSelectedSource('all')}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  selectedSource === 'all'
-                    ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
-                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                }`}
-              >
-                All
-              </button>
-              <button
-                onClick={() => setSelectedSource('X')}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-2 ${
-                  selectedSource === 'X'
-                    ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
-                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                }`}
-              >
-                <XLogo className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setSelectedSource('LinkedIn')}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-2 ${
-                  selectedSource === 'LinkedIn'
-                    ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
-                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                }`}
-              >
-                <LinkedInLogo className="w-4 h-4" />
-              </button>
-            </div>
+        {/* X Trend Card */}
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="flex items-center space-x-2 mb-2">
+            <XLogo className="w-5 h-5" />
+            <h2 className="text-lg font-semibold text-gray-900">Trend</h2>
           </div>
-          <div className="h-[400px]">
-            <Line
-              data={getChartData()}
-              options={{
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: {
-                  mode: 'index' as const,
-                  intersect: false,
-                },
-                scales: {
-                  y: {
-                    beginAtZero: true,
-                    grid: {
-                      color: 'rgba(156, 163, 175, 0.1)',
-                    },
-                    ticks: {
-                      color: 'rgb(156, 163, 175)',
-                    }
+          <div className="flex items-center">
+            <p className="text-3xl font-bold text-gray-900">{Math.abs(mockData.platformStats.X.trend)}%</p>
+            {mockData.platformStats.X.trend > 0 ? (
+              <ArrowUpIcon className="w-5 h-5 ml-2 text-green-500" />
+            ) : (
+              <ArrowDownIcon className="w-5 h-5 ml-2 text-red-500" />
+            )}
+          </div>
+          <p className="mt-2 text-sm text-gray-600">
+            {mockData.platformStats.X.trend > 0 ? 'Increase' : 'Decrease'} from last month
+          </p>
+        </div>
+
+        {/* LinkedIn Trend Card */}
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="flex items-center space-x-2 mb-2">
+            <LinkedInLogo className="w-5 h-5 text-[#0A66C2]" />
+            <h2 className="text-lg font-semibold text-gray-900">Trend</h2>
+          </div>
+          <div className="flex items-center">
+            <p className="text-3xl font-bold text-gray-900">{Math.abs(mockData.platformStats.LinkedIn.trend)}%</p>
+            {mockData.platformStats.LinkedIn.trend > 0 ? (
+              <ArrowUpIcon className="w-5 h-5 ml-2 text-green-500" />
+            ) : (
+              <ArrowDownIcon className="w-5 h-5 ml-2 text-red-500" />
+            )}
+          </div>
+          <p className="mt-2 text-sm text-gray-600">
+            {mockData.platformStats.LinkedIn.trend > 0 ? 'Increase' : 'Decrease'} from last month
+          </p>
+        </div>
+      </div>
+
+      {/* Engagement Chart */}
+      <div className="bg-white rounded-lg shadow p-6">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-lg font-semibold text-gray-900">Engagement Trends</h2>
+          <div className="flex space-x-2">
+            <button
+              onClick={() => setSelectedSource('all')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                selectedSource === 'all'
+                  ? 'bg-blue-100 text-blue-700'
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              All
+            </button>
+            <button
+              onClick={() => setSelectedSource('X')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-2 ${
+                selectedSource === 'X'
+                  ? 'bg-blue-100 text-blue-700'
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              <XLogo className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setSelectedSource('LinkedIn')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-2 ${
+                selectedSource === 'LinkedIn'
+                  ? 'bg-blue-100 text-blue-700'
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              <LinkedInLogo className="w-4 h-4 text-[#0A66C2]" />
+            </button>
+          </div>
+        </div>
+        <div className="h-[400px]">
+          <Line
+            data={getChartData()}
+            options={{
+              responsive: true,
+              maintainAspectRatio: false,
+              interaction: {
+                mode: 'index' as const,
+                intersect: false,
+              },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  grid: {
+                    color: 'rgba(156, 163, 175, 0.1)',
                   },
-                  x: {
-                    grid: {
-                      color: 'rgba(156, 163, 175, 0.1)',
-                    },
-                    ticks: {
-                      color: 'rgb(156, 163, 175)',
-                    }
+                  ticks: {
+                    color: 'rgb(107, 114, 128)',
                   }
                 },
-                plugins: {
-                  legend: {
-                    labels: {
-                      color: 'rgb(156, 163, 175)',
-                      usePointStyle: true,
-                      generateLabels: (chart) => {
-                        const datasets = chart.data.datasets;
-                        return datasets.map((dataset, i) => ({
-                          text: dataset.label?.includes('X') ? '' : '',
-                          fillStyle: dataset.backgroundColor as string,
-                          strokeStyle: dataset.borderColor as string,
-                          lineWidth: 2,
-                          hidden: !chart.isDatasetVisible(i),
-                          index: i,
-                          pointStyle: (ctx) => {
-                            return dataset.label?.includes('X') 
-                              ? new XLogo({ className: 'w-4 h-4' }).type
-                              : new LinkedInLogo({ className: 'w-4 h-4' }).type;
-                          }
-                        }));
-                      }
-                    }
+                x: {
+                  grid: {
+                    color: 'rgba(156, 163, 175, 0.1)',
                   },
-                  tooltip: {
-                    callbacks: {
-                      afterBody: (context) => {
-                        const dataIndex = context[0].dataIndex;
-                        const platform = selectedSource === 'all' 
-                          ? context[0].dataset.label?.includes('X') ? 'X' : 'LinkedIn'
-                          : selectedSource;
-                        const impressions = mockData.platformStats[platform as 'X' | 'LinkedIn'].impressions[dataIndex];
-                        return [
-                          `Likes: ${impressions.likes}`,
-                          `Reposts: ${impressions.reposts}`,
-                          `Comments: ${impressions.comments}`
-                        ];
-                      }
+                  ticks: {
+                    color: 'rgb(107, 114, 128)',
+                  }
+                }
+              },
+              plugins: {
+                legend: {
+                  labels: {
+                    color: 'rgb(107, 114, 128)',
+                    usePointStyle: true,
+                    generateLabels: (chart) => {
+                      const datasets = chart.data.datasets;
+                      return datasets.map((dataset, i) => ({
+                        text: dataset.label?.includes('X') ? '' : '',
+                        fillStyle: dataset.backgroundColor as string,
+                        strokeStyle: dataset.borderColor as string,
+                        lineWidth: 2,
+                        hidden: !chart.isDatasetVisible(i),
+                        index: i,
+                        pointStyle: (ctx) => {
+                          return dataset.label?.includes('X') 
+                            ? new XLogo({ className: 'w-4 h-4' }).type
+                            : new LinkedInLogo({ className: 'w-4 h-4' }).type;
+                        }
+                      }));
                     }
                   }
                 }
-              }}
-            />
-          </div>
+              }
+            }}
+          />
         </div>
       </div>
-    </MainLayout>
+    </div>
   );
 } 
