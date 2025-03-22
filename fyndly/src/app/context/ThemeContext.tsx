@@ -9,38 +9,51 @@ type ThemeContextType = {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+function getInitialTheme(): boolean {
+  if (typeof window !== 'undefined') {
+    // Check localStorage
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      return savedTheme === 'dark';
+    }
+    
+    // Check system preference
+    if (window.matchMedia) {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+  }
+  
+  return true; // Default to dark mode
+}
+
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(getInitialTheme);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // Check system preference initially
-    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const savedTheme = localStorage.getItem('theme');
-    
-    // Use saved theme if exists, otherwise use system preference
-    const shouldUseDark = savedTheme === 'dark' || (!savedTheme && systemPrefersDark);
-    
-    setIsDarkMode(shouldUseDark);
-    if (shouldUseDark) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
+    setMounted(true);
   }, []);
 
-  const toggleTheme = () => {
-    setIsDarkMode(prev => {
-      const newTheme = !prev;
-      if (newTheme) {
+  useEffect(() => {
+    if (mounted) {
+      if (isDarkMode) {
         document.documentElement.classList.add('dark');
         localStorage.setItem('theme', 'dark');
       } else {
         document.documentElement.classList.remove('dark');
         localStorage.setItem('theme', 'light');
       }
-      return newTheme;
-    });
+    }
+  }, [isDarkMode, mounted]);
+
+  const toggleTheme = () => {
+    setIsDarkMode(prev => !prev);
   };
+
+  // Prevent flash of wrong theme
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <ThemeContext.Provider value={{ isDarkMode, toggleTheme }}>
