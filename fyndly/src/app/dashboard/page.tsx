@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import MainLayout from '../components/layout/MainLayout';
+import { XLogo, LinkedInLogo } from '../components/Icons';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -113,14 +114,23 @@ export default function DashboardPage() {
               <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">posts</span>
             </div>
             <div className="mt-4 flex justify-between text-sm">
-              <span className="text-gray-600 dark:text-gray-300">X: {mockData.platformStats.X.posts}</span>
-              <span className="text-gray-600 dark:text-gray-300">LinkedIn: {mockData.platformStats.LinkedIn.posts}</span>
+              <div className="flex items-center space-x-2">
+                <XLogo className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+                <span className="text-gray-600 dark:text-gray-300">{mockData.platformStats.X.posts}</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <LinkedInLogo className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+                <span className="text-gray-600 dark:text-gray-300">{mockData.platformStats.LinkedIn.posts}</span>
+              </div>
             </div>
           </div>
 
           {/* X Trend Card */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 transition-colors duration-200">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">X Trend</h2>
+            <div className="flex items-center space-x-2 mb-2">
+              <XLogo className="w-5 h-5 text-gray-900 dark:text-white" />
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Trend</h2>
+            </div>
             <div className="flex items-center">
               <p className="text-3xl font-bold text-gray-900 dark:text-white">{Math.abs(mockData.platformStats.X.trend)}%</p>
               {mockData.platformStats.X.trend > 0 ? (
@@ -136,7 +146,10 @@ export default function DashboardPage() {
 
           {/* LinkedIn Trend Card */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 transition-colors duration-200">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">LinkedIn Trend</h2>
+            <div className="flex items-center space-x-2 mb-2">
+              <LinkedInLogo className="w-5 h-5 text-gray-900 dark:text-white" />
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Trend</h2>
+            </div>
             <div className="flex items-center">
               <p className="text-3xl font-bold text-gray-900 dark:text-white">{Math.abs(mockData.platformStats.LinkedIn.trend)}%</p>
               {mockData.platformStats.LinkedIn.trend > 0 ? (
@@ -168,23 +181,23 @@ export default function DashboardPage() {
               </button>
               <button
                 onClick={() => setSelectedSource('X')}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-2 ${
                   selectedSource === 'X'
                     ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
                     : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                 }`}
               >
-                X
+                <XLogo className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setSelectedSource('LinkedIn')}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-2 ${
                   selectedSource === 'LinkedIn'
                     ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
                     : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                 }`}
               >
-                LinkedIn
+                <LinkedInLogo className="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -221,6 +234,23 @@ export default function DashboardPage() {
                   legend: {
                     labels: {
                       color: 'rgb(156, 163, 175)',
+                      usePointStyle: true,
+                      generateLabels: (chart) => {
+                        const datasets = chart.data.datasets;
+                        return datasets.map((dataset, i) => ({
+                          text: dataset.label?.includes('X') ? '' : '',
+                          fillStyle: dataset.backgroundColor as string,
+                          strokeStyle: dataset.borderColor as string,
+                          lineWidth: 2,
+                          hidden: !chart.isDatasetVisible(i),
+                          index: i,
+                          pointStyle: (ctx) => {
+                            return dataset.label?.includes('X') 
+                              ? new XLogo({ className: 'w-4 h-4' }).type
+                              : new LinkedInLogo({ className: 'w-4 h-4' }).type;
+                          }
+                        }));
+                      }
                     }
                   },
                   tooltip: {
