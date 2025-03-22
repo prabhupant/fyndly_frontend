@@ -1,47 +1,98 @@
 'use client';
 
+import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+
+interface NavItem {
+  label: string;
+  href: string;
+  icon: string;
+  subItems?: NavItem[];
+}
+
+const navigation: NavItem[] = [
+  { label: 'Dashboard', href: '/dashboard', icon: '🏠' },
+  {
+    label: 'Research Hub',
+    href: '/research-hub',
+    icon: '🔍',
+    subItems: [
+      { label: 'My Collections', href: '/research-hub/collections', icon: '📁' },
+      { label: 'Saved Insights', href: '/research-hub/insights', icon: '💡' },
+    ],
+  },
+  {
+    label: 'Content Studio',
+    href: '/content-studio',
+    icon: '✍️',
+    subItems: [
+      { label: 'Drafts', href: '/content-studio/drafts', icon: '📝' },
+      { label: 'Published', href: '/content-studio/published', icon: '📢' },
+      { label: 'Templates', href: '/content-studio/templates', icon: '📋' },
+    ],
+  },
+  {
+    label: 'AI Agents',
+    href: '/ai-agents',
+    icon: '🤖',
+    subItems: [
+      { label: 'Research Agent', href: '/ai-agents/research', icon: '🔬' },
+      { label: 'Writing Agent', href: '/ai-agents/writing', icon: '✒️' },
+      { label: 'Workflow Agent', href: '/ai-agents/workflow', icon: '⚡' },
+    ],
+  },
+  { label: 'Insights & Analytics', href: '/analytics', icon: '📈' },
+  { label: 'Library', href: '/library', icon: '📚' },
+  { label: 'Settings', href: '/settings', icon: '⚙️' },
+];
 
 export default function LeftPanel() {
   const pathname = usePathname();
 
-  const navItems = [
-    { name: 'Dashboard', path: '/dashboard', icon: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-      </svg>
-    )},
-    // Add more navigation items here
-  ];
+  const isActive = (href: string) => pathname === href;
+  const isParentActive = (item: NavItem) => 
+    item.subItems?.some(subItem => pathname === subItem.href) || pathname === item.href;
 
   return (
-    <div className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 h-screen fixed left-0 top-0 transition-colors duration-200">
-      <div className="h-16 border-b border-gray-200 dark:border-gray-700 flex items-center px-6">
-        <Link href="/dashboard" className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
-          Fyndly
-        </Link>
+    <div className="fixed left-0 top-0 h-screen w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-colors duration-200">
+      <div className="p-6">
+        <h1 style={{ fontFamily: 'var(--font-dancing-script)' }} className="text-5xl text-blue-600 dark:text-blue-400 font-bold tracking-wide">fyndly</h1>
       </div>
-      
-      <nav className="mt-6">
-        {navItems.map((item) => {
-          const isActive = pathname === item.path;
-          
-          return (
+      <nav className="mt-2">
+        {navigation.map((item) => (
+          <div key={item.href}>
             <Link
-              key={item.path}
-              href={item.path}
-              className={`flex items-center px-6 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
-                isActive ? 'bg-indigo-50 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 border-r-4 border-indigo-600 dark:border-indigo-400' : ''
-              }`}
+              href={item.href}
+              className={`flex items-center px-6 py-2.5 text-sm font-medium transition-colors duration-200
+                ${isParentActive(item)
+                  ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-gray-700'
+                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                }`}
             >
-              <span className={isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-400 dark:text-gray-500'}>
-                {item.icon}
-              </span>
-              <span className="ml-3">{item.name}</span>
+              <span className="mr-3">{item.icon}</span>
+              {item.label}
             </Link>
-          );
-        })}
+            {item.subItems && (
+              <div className="ml-6 border-l border-gray-200 dark:border-gray-700">
+                {item.subItems.map((subItem) => (
+                  <Link
+                    key={subItem.href}
+                    href={subItem.href}
+                    className={`flex items-center px-6 py-2 text-sm transition-colors duration-200
+                      ${isActive(subItem.href)
+                        ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-gray-700'
+                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                      }`}
+                  >
+                    <span className="mr-3">{subItem.icon}</span>
+                    {subItem.label}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
       </nav>
     </div>
   );
