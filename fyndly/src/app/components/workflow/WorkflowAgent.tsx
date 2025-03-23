@@ -12,6 +12,11 @@ import {
 import { XLogo, LinkedInLogo } from '../Icons';
 import WorkflowForm from './WorkflowForm';
 
+interface ContentSource {
+  id: string;
+  name: string;
+}
+
 interface Workflow {
   id: string;
   name: string;
@@ -41,6 +46,11 @@ export default function WorkflowAgent() {
   const platforms: Platform[] = [
     { id: 'linkedin', name: 'LinkedIn', icon: LinkedInLogo, status: 'active' },
     { id: 'twitter', name: 'Twitter (X)', icon: XLogo, status: 'active' },
+  ];
+
+  const contentSources: ContentSource[] = [
+    { id: 'writing', name: 'Writing Agent Drafts' },
+    { id: 'research', name: 'Research Agent Summaries' }
   ];
 
   const [workflows, setWorkflows] = useState<Workflow[]>([

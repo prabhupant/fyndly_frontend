@@ -1,17 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { XLogo, LinkedInLogo } from '../components/Icons';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-} from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import { ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/24/solid';
 import TopPerformingPosts from '../components/dashboard/TopPerformingPosts';
@@ -23,16 +13,24 @@ import AIRecommendations from '../components/dashboard/AIRecommendations';
 import QuickActions from '../components/dashboard/QuickActions';
 import GamificationCard from '../components/dashboard/GamificationCard';
 
-// Register ChartJS components
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
+// Move Chart.js registration to useEffect
+let ChartJS: any;
+
+if (typeof window !== 'undefined') {
+  import('chart.js').then((chartjs) => {
+    ChartJS = chartjs.Chart;
+    const { CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } = chartjs;
+    ChartJS.register(
+      CategoryScale,
+      LinearScale,
+      PointElement,
+      LineElement,
+      Title,
+      Tooltip,
+      Legend
+    );
+  });
+}
 
 // Mock data - replace with actual API data
 const mockData = {
@@ -252,17 +250,13 @@ export default function DashboardPage() {
                           generateLabels: (chart) => {
                             const datasets = chart.data.datasets;
                             return datasets.map((dataset, i) => ({
-                              text: dataset.label?.includes('X') ? '' : '',
+                              text: dataset.label || '',
                               fillStyle: dataset.backgroundColor as string,
                               strokeStyle: dataset.borderColor as string,
                               lineWidth: 2,
                               hidden: !chart.isDatasetVisible(i),
                               index: i,
-                              pointStyle: (ctx) => {
-                                return dataset.label?.includes('X') 
-                                  ? new XLogo({ className: 'w-4 h-4' }).type
-                                  : new LinkedInLogo({ className: 'w-4 h-4' }).type;
-                              }
+                              pointStyle: dataset.label?.includes('X') ? 'circle' : 'rectRounded'
                             }));
                           }
                         }
